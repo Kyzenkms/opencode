@@ -111,6 +111,7 @@ import type {
   McpRemoteConfig,
   McpStatusErrors,
   McpStatusResponses,
+  ModelRef,
   MoveSessionDestination,
   OutputFormat,
   Part as Part2,
@@ -128,10 +129,12 @@ import type {
   PermissionRespondResponses,
   PermissionRuleset,
   PermissionV2Reply,
+  ProjectCommands,
   ProjectCurrentErrors,
   ProjectCurrentResponses,
   ProjectDirectoriesErrors,
   ProjectDirectoriesResponses,
+  ProjectIcon,
   ProjectInitGitErrors,
   ProjectInitGitResponses,
   ProjectListErrors,
@@ -152,6 +155,7 @@ import type {
   PtyConnectTokenErrors,
   PtyConnectTokenResponses,
   PtyCreateErrors,
+  PtyCreateInput,
   PtyCreateResponses,
   PtyGetErrors,
   PtyGetResponses,
@@ -162,6 +166,7 @@ import type {
   PtyShellsErrors,
   PtyShellsResponses,
   PtyUpdateErrors,
+  PtyUpdateInput,
   PtyUpdateResponses,
   QuestionAnswer,
   QuestionListErrors,
@@ -2611,17 +2616,8 @@ export class Project extends HeyApiClient {
       directory?: string
       workspace?: string
       name?: string
-      icon?: {
-        url?: string
-        override?: string
-        color?: string
-      }
-      commands?: {
-        /**
-         * Startup script to run when creating a new workspace (worktree)
-         */
-        start?: string
-      }
+      icon?: ProjectIcon
+      commands?: ProjectCommands
     },
     options?: Options<never, ThrowOnError>,
   ) {
@@ -2755,13 +2751,7 @@ export class Pty extends HeyApiClient {
     parameters?: {
       directory?: string
       workspace?: string
-      command?: string
-      args?: Array<string>
-      cwd?: string
-      title?: string
-      env?: {
-        [key: string]: string
-      }
+      ptyCreateInput?: PtyCreateInput
     },
     options?: Options<never, ThrowOnError>,
   ) {
@@ -2772,11 +2762,7 @@ export class Pty extends HeyApiClient {
           args: [
             { in: "query", key: "directory" },
             { in: "query", key: "workspace" },
-            { in: "body", key: "command" },
-            { in: "body", key: "args" },
-            { in: "body", key: "cwd" },
-            { in: "body", key: "title" },
-            { in: "body", key: "env" },
+            { key: "ptyCreateInput", map: "body" },
           ],
         },
       ],
@@ -2867,11 +2853,7 @@ export class Pty extends HeyApiClient {
       ptyID: string
       directory?: string
       workspace?: string
-      title?: string
-      size?: {
-        rows: number
-        cols: number
-      }
+      ptyUpdateInput?: PtyUpdateInput
     },
     options?: Options<never, ThrowOnError>,
   ) {
@@ -2883,8 +2865,7 @@ export class Pty extends HeyApiClient {
             { in: "path", key: "ptyID" },
             { in: "query", key: "directory" },
             { in: "query", key: "workspace" },
-            { in: "body", key: "title" },
-            { in: "body", key: "size" },
+            { key: "ptyUpdateInput", map: "body" },
           ],
         },
       ],
@@ -5379,11 +5360,7 @@ export class Session3 extends HeyApiClient {
     parameters?: {
       id?: string
       agent?: string
-      model?: {
-        id: string
-        providerID: string
-        variant?: string
-      }
+      model?: ModelRef
       location?: LocationRef
     },
     options?: Options<never, ThrowOnError>,
@@ -5479,11 +5456,7 @@ export class Session3 extends HeyApiClient {
   public switchModel<ThrowOnError extends boolean = false>(
     parameters: {
       sessionID: string
-      model?: {
-        id: string
-        providerID: string
-        variant?: string
-      }
+      model?: ModelRef
     },
     options?: Options<never, ThrowOnError>,
   ) {
@@ -6378,18 +6351,12 @@ export class Pty2 extends HeyApiClient {
    * Create a pseudo-terminal session for a location.
    */
   public create<ThrowOnError extends boolean = false>(
-    parameters?: {
+    parameters: {
       location?: {
         directory?: string
         workspace?: string
       }
-      command?: string
-      args?: Array<string>
-      cwd?: string
-      title?: string
-      env?: {
-        [key: string]: string
-      }
+      ptyCreateInput: PtyCreateInput
     },
     options?: Options<never, ThrowOnError>,
   ) {
@@ -6399,11 +6366,7 @@ export class Pty2 extends HeyApiClient {
         {
           args: [
             { in: "query", key: "location" },
-            { in: "body", key: "command" },
-            { in: "body", key: "args" },
-            { in: "body", key: "cwd" },
-            { in: "body", key: "title" },
-            { in: "body", key: "env" },
+            { key: "ptyCreateInput", map: "body" },
           ],
         },
       ],
@@ -6498,11 +6461,7 @@ export class Pty2 extends HeyApiClient {
         directory?: string
         workspace?: string
       }
-      title?: string
-      size?: {
-        rows: number
-        cols: number
-      }
+      ptyUpdateInput: PtyUpdateInput
     },
     options?: Options<never, ThrowOnError>,
   ) {
@@ -6513,8 +6472,7 @@ export class Pty2 extends HeyApiClient {
           args: [
             { in: "path", key: "ptyID" },
             { in: "query", key: "location" },
-            { in: "body", key: "title" },
-            { in: "body", key: "size" },
+            { key: "ptyUpdateInput", map: "body" },
           ],
         },
       ],
